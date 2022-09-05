@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Eureka Service Discovery
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+server:
+  port: 9090
