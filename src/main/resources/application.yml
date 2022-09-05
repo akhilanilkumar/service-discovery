@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Eureka Service Discovery
+    name: Eureka-Service-Discovery
 eureka:
   client:
     registerWithEureka: false
