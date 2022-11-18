@@ -1,0 +1,71 @@
+version: "3"
+services:
+  application-gateway:
+    image: ey/application-gateway
+    container_name: application-gateway-service
+    environment:
+      - EUREKA_URI=http://eureka-service-discovery:9090/eureka
+      - LEADER_SERVICE=http://leader-service:9092/
+      - DEV_SERVICE=http://development-service:9093/
+      - PARTY_SERVICE=http://party-service:9091/
+    networks:
+      - backend
+    ports:
+      - "8080:8080"
+    build: ./app-gateway
+  eureka-service-discovery:
+    image: ey/eureka-service-discovery
+    container_name: eureka-service-discovery
+    build: ./service-discovery
+    networks:
+      - backend
+    ports:
+      - "9090:9090"
+  party-service:
+    image: ey/party-service
+    container_name: party-service
+    build: ./party-service
+    environment:
+      - EUREKA_URI=http://eureka-service-discovery:9090/eureka
+      - DB_URL=jdbc:mysql://mysql-db.cz9eevms0bmy.ap-south-1.rds.amazonaws.com/ey_assignment
+      - DB_USERNAME=rootuser
+      - DB_PASS=zxcv+321
+      - LEADER_SERVICE=http://leader-service:9092/leader/
+      - DEV_SERVICE=http://development-service:9093/development/
+    networks:
+      - backend
+    ports:
+      - "9091:9091"
+  leader-service:
+    image: ey/leader-service
+    container_name: leader-service
+    build: ./leader-service
+    environment:
+      - EUREKA_URI=http://eureka-service-discovery:9090/eureka
+      - DB_URL=jdbc:mysql://mysql-db.cz9eevms0bmy.ap-south-1.rds.amazonaws.com/ey_assignment
+      - DB_USERNAME=rootuser
+      - DB_PASS=zxcv+321
+      - PARTY_SERVICE=http://party-service:9091/party/
+      - DEV_SERVICE=http://development-service:9093/development/
+    networks:
+      - backend
+    ports:
+      - "9092:9092"
+  development-service:
+    image: ey/development-service
+    container_name: development-service
+    build: ./development-service
+    environment:
+      - EUREKA_URI=http://eureka-service-discovery:9090/eureka
+      - DB_URL=jdbc:mysql://mysql-db.cz9eevms0bmy.ap-south-1.rds.amazonaws.com/ey_assignment
+      - DB_USERNAME=rootuser
+      - DB_PASS=zxcv+321
+      - PARTY_SERVICE=http://party-service:9091/party/
+      - LEADER_SERVICE=http://leader-service:9092/leader/
+    networks:
+      - backend
+    ports:
+      - "9093:9093"
+networks:
+  backend:
+    driver: bridge
